@@ -11,4 +11,10 @@
         $token = bin2hex($token);
         return $token;
     }
+
+    function getCookieArray() {
+        $cookieDecoded = base64_decode($_COOKIE['pas_auth']);
+        $cookieArray = json_decode($cookieDecoded, true);
+        return $cookieArray;
+    }
 ?>

@@ -102,12 +102,40 @@
             }
         }
 
-        public function deleteExistingToken() {
+        private function deleteExistingToken() {
             $connection = $this->dbController->getConnection();
             $stmt = $connection->prepare("DELETE FROM auth_token WHERE email_id=?;");
             $stmt->bind_param("s", $this->emailID);
             $stmt->execute();
             $result = $stmt->get_result();
+        }
+
+        public function getScreenName() {
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("SELECT first_name, middle_name, last_name FROM user WHERE email_id=?;");
+            $stmt->bind_param("s", $this->emailID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $firstName = "";
+            $middleName = "";
+            $lastName = "";
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $firstName = $row['first_name'];
+                    $middleName = $row['middle_name'];
+                    $lastName = $row['last_name'];
+
+                    if ($middleName != "") {
+                        return "$firstName $middleName $lastName";
+                    } else {
+                        return "$firstName $lastName";
+                    }
+                }
+            } else {
+                return false;
+            }
         }
     }
 ?>
