@@ -172,5 +172,17 @@
                 return false;
             }
         }
+
+        public function updateDetails($emailID,$mobileNumber){
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("UPDATE user SET email_id=?,mobile_number=?;");
+            $stmt->bind_param("ss", $this->$emailID, $mobileNumber);
+            $stmt->execute();
+            if ($stmt->affected_rows >= 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 ?>
