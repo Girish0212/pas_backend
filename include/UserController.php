@@ -62,7 +62,42 @@
             }
         }
 
+        public function getAccountActivation() {
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("SELECT active FROM user WHERE email_id=?;");
+            $stmt->bind_param("s", $this->emailID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $active = $row['active'];
+                    if ($active == 'yes') {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            } else {
+                return false;
+            }
+        }
+
         public function getTokenValidity($token) {
+            // check whether the user is valid first
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("SELECT * FROM user WHERE email_id=?;");
+            $stmt->bind_param("s", $this->emailID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                // valid
+            } else {
+                return 'invalid';
+            }
+
+            // then check the token
             $connection = $this->dbController->getConnection();
             $stmt = $connection->prepare("SELECT * FROM auth_token WHERE email_id=? and token=?;");
             $stmt->bind_param("ss", $this->emailID, $token);

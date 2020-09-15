@@ -11,7 +11,7 @@
             case 'screenName':
                 $cookieArray = getCookieArray();
                 $screenName = getScreenName($cookieArray['emailID']);
-                $responseArray['requestType'] = 'validateCookie';
+                $responseArray['requestType'] = 'getScreenName';
                 $responseArray['emailID'] = $cookieArray['emailID'];
                 $responseArray['result'] = $screenName;
             break;

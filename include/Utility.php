@@ -12,9 +12,25 @@
         return $token;
     }
 
+    function generateActivationCode($cstrong = true) {
+        $aCode = openssl_random_pseudo_bytes(8, $cstrong);
+        $aCode = bin2hex($aCode);
+        return $aCode;
+    }
+
     function getCookieArray() {
         $cookieDecoded = base64_decode($_COOKIE['pas_auth']);
         $cookieArray = json_decode($cookieDecoded, true);
         return $cookieArray;
+    }
+
+    function getBackendScriptDir() {
+        $url = $_SERVER['REQUEST_URI']; //returns the current URL
+        $parts = explode('/',$url);
+        $dir = $_SERVER['SERVER_NAME'];
+        for ($i = 0; $i < count($parts) - 1; $i++) {
+            $dir .= $parts[$i] . "/";
+        }
+        return $dir;
     }
 ?>

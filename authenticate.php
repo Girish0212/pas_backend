@@ -14,7 +14,12 @@
                     $responseArray['requestType'] = 'validateEmail';
                     $responseArray['emailID'] = $_POST['emailID'];
                     if ($valid) {
-                        $responseArray['result'] = 'valid';
+                        $active = checkAccountActivation($_POST['emailID']);
+                        if ($active) {
+                            $responseArray['result'] = 'valid';
+                        } else {
+                            $responseArray['result'] = 'notactive';
+                        }
                     } else {
                         $responseArray['result'] = 'invalid';
                     }
@@ -65,6 +70,7 @@
             case 'token':
                 if (isset($_COOKIE['pas_auth']) && !empty($_COOKIE['pas_auth']) ) {
                     // decode and extract cookie
+                    $existingCookie = $_COOKIE['pas_auth'];
                     $cookieArray = getCookieArray();
                     $emailID = $cookieArray['emailID'];
                     $token = $cookieArray['token'];
@@ -74,15 +80,21 @@
 
                     $responseArray['requestType'] = 'validateCookie';
                     $responseArray['emailID'] = $emailID;
-                    $responseArray['result'] = $valid;
                     if ($valid == 'valid') {
-                        // set the cookie
-
-                        $time = 0;
-                        if ($rememberMe == 'true') {
-                            $time = time() + (24 * 3600 * 30);
+                        $active = checkAccountActivation($emailID);
+                        if ($active) {
+                            $responseArray['result'] = 'valid';
+                            // set the cookie
+                            $time = 0;
+                            if ($rememberMe == 'true') {
+                                $time = time() + (24 * 3600 * 30);
+                            }
+                            setcookie("pas_auth", $existingCookie, $time, "/");
+                        } else {
+                            $responseArray['result'] = 'notactive';    
                         }
-                        setcookie("pas_auth", $_COOKIE['pas_auth'], $time, "/");
+                    } else {
+                        $responseArray['result'] = 'invalid';
                     }
                 } else {
                     http_response_code(400);
@@ -97,6 +109,11 @@
     function checkEmail($emailID) {
         $userController = new UserController($emailID);
         return $userController->getUserValidity();
+    }
+
+    function checkAccountActivation($emailID) {
+        $userController = new UserController($emailID);
+        return $userController->getAccountActivation();
     }
 
     function checkPassword($emailID, $password) {
