@@ -22,7 +22,7 @@
 
         // Response Array Values
         $responseArray['requestType'] = 'signUp';
-        $responseArray['emailID'] = $emailID;
+        $responseArray['emailID'] = $_POST['emailID'];
         
         // Fetch details from POST request
         $emailID = $_POST['emailID'];
