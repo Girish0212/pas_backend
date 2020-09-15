@@ -18,6 +18,7 @@
         isset($_POST['middleName']) &&
         isset($_POST['lastName']) && !empty($_POST['lastName']) &&
         isset($_POST['emailID']) && !empty($_POST['emailID']) &&
+        isset($_POST['mobileNumber']) && !empty($_POST['mobileNumber']) &&
         isset($_POST['password']) && !empty($_POST['password'])) {
 
         // Response Array Values
@@ -31,6 +32,7 @@
         $firstName = $_POST['firstName'];
         $middleName = $_POST['middleName'];
         $lastName = $_POST['lastName'];
+        $mobileNumber = $_POST['mobileNumber'];
         $active = "no";
 
         try {
@@ -46,8 +48,8 @@
             if ($result->num_rows > 0) {
                 $responseArray['result'] = "alreadyExists";
             } else {
-                $stmt = $conn->prepare("INSERT INTO user (email_id, pass_hash, active, first_name, middle_name, last_name) VALUES (?, ?, ?, ?, ?, ?);");
-                $stmt->bind_param("ssssss", $emailID, $passHash, $active, $firstName, $middleName, $lastName);
+                $stmt = $conn->prepare("INSERT INTO user (email_id, pass_hash, active, first_name, middle_name, last_name, mobile_number) VALUES (?, ?, ?, ?, ?, ?, ?);");
+                $stmt->bind_param("sssssss", $emailID, $passHash, $active, $firstName, $middleName, $lastName, $mobileNumber);
                 $stmt->execute();
                 
                 if ($stmt->affected_rows >= 0) {
@@ -97,7 +99,7 @@
                             $mail->Body = "Hey $name,
                             <br>
                             <br>
-                            Here's the <a href=''>link</a> to activate your new account on Passport Enquiry System.<br><br>
+                            Here's the <a href='$activationLink'>link</a> to activate your new account on Passport Enquiry System.<br><br>
                             If the link doesn't work, copy and paste this URL onto your browser's address bar:<br>
                             $activationLink<br><br>
                             <b>This link will expire in 10 minutes.</b><br><br>
