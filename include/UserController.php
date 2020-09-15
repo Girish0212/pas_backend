@@ -175,14 +175,28 @@
 
         public function updateDetails($emailID,$mobileNumber){
             $connection = $this->dbController->getConnection();
-            $stmt = $connection->prepare("UPDATE user SET email_id=?,mobile_number=?;");
-            $stmt->bind_param("ss", $this->$emailID, $mobileNumber);
+            $stmt = $connection->prepare("UPDATE user SET email_id=?,mobile_number=? WHERE email_id=?;");
+            $stmt->bind_param("sss", $emailID, $mobileNumber,$this->emailID);
             $stmt->execute();
             if ($stmt->affected_rows >= 0) {
                 return true;
             } else {
                 return false;
             }
+        }
+
+        public function updatePassword($password){
+            $connection = $this->dbController->getConnection();
+            $passHash = hash('sha256', $password);
+            $stmt = $connection->prepare("UPDATE user SET pass_hash=? WHERE email_id=?;");
+            $stmt->bind_param("ss", $passHash,$this->$emailID);
+            $stmt->execute();
+            if ($stmt->affected_rows >= 0) {
+                return true;
+            } else {
+                return false;
+            }
+
         }
     }
 ?>
