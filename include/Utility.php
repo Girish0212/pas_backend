@@ -33,4 +33,16 @@
         }
         return $dir;
     }
+
+    define('FRONTEND_DIR', 'PassportAutomationSystem/');
+
+    function getFrontendScriptDir() {
+        $url = $_SERVER['REQUEST_URI']; //returns the current URL
+        $parts = explode('/',$url);
+        $dir = $_SERVER['SERVER_NAME'];
+        for ($i = 0; $i < count($parts) - 2; $i++) {
+            $dir .= $parts[$i] . "/";
+        }
+        return $dir . FRONTEND_DIR;
+    }
 ?>

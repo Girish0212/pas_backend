@@ -6,6 +6,7 @@
         private $emailID = "";
         private $dbController = null;
         private $userValidity = false;
+        private $passwordResetCode = "";
 
         /* Constructor */
         public function __construct($emailID) {
@@ -178,6 +179,39 @@
             $stmt = $connection->prepare("UPDATE user SET email_id=?,mobile_number=? WHERE email_id=?;");
             $stmt->bind_param("sss", $emailID, $mobileNumber,$this->emailID);
             $stmt->execute();
+            if ($stmt->affected_rows > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public function updatePassword($password) {
+            $connection = $this->dbController->getConnection();
+            $passHash = hash('sha256', $password);
+
+            $stmt = $connection->prepare("UPDATE user SET pass_hash=? WHERE email_id=?;");
+            $stmt->bind_param("ss", $passHash, $this->emailID);
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        public function requestPasswordReset() {
+            $cstrong = true;
+            $resetCode = openssl_random_pseudo_bytes(8, $cstrong);
+            $resetCode = bin2hex($resetCode);
+            $genTime = date("Y-m-d H:i:s");
+
+            // store reset code to database (duplicate/new)
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("INSERT INTO pending_password_reset (email_id, reset_code, gen_time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE reset_code=?, gen_time=?;");
+            $stmt->bind_param("sssss", $this->emailID, $resetCode, $genTime, $resetCode, $genTime);
+            $stmt->execute();
             if ($stmt->affected_rows >= 0) {
                 return true;
             } else {
@@ -185,18 +219,23 @@
             }
         }
 
-        public function updatePassword($password){
-            $connection = $this->dbController->getConnection();
-            $passHash = hash('sha256', $password);
-            $stmt = $connection->prepare("UPDATE user SET pass_hash=? WHERE email_id=?;");
-            $stmt->bind_param("ss", $passHash,$this->$emailID);
-            $stmt->execute();
-            if ($stmt->affected_rows >= 0) {
-                return true;
+        public function getPasswordResetCode() {
+            if ($this->passwordResetCode != "") {
+                return $this->passwordResetCode;
             } else {
-                return false;
-            }
+                $connection = $this->dbController->getConnection();
+                $stmt = $connection->prepare("SELECT * FROM pending_password_reset WHERE email_id=?;");
+                $stmt->bind_param("s", $this->emailID);
+                $stmt->execute();
+                $result = $stmt->get_result();
 
+                if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                        $this->passwordResetCode = $row['reset_code'];
+                        return $this->passwordResetCode;
+                    }
+                }
+            }   
         }
     }
 ?>

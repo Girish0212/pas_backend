@@ -28,7 +28,7 @@
 
                 $interval = date_diff($gen_time_date, $time_date_now);
                 $time = $interval->format("%i");
-                if ($time > 10) {
+                if ($time >= 10) {
                     // expired
                     try {
                         $stmt = $conn->prepare("DELETE FROM pending_activation WHERE email_id=? AND activation_code=?;");
