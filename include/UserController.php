@@ -174,7 +174,7 @@
             }
         }
 
-        public function updateDetails($emailID,$mobileNumber){
+        public function updateDetails($emailID,$mobileNumber) {
             $connection = $this->dbController->getConnection();
             $stmt = $connection->prepare("UPDATE user SET email_id=?,mobile_number=? WHERE email_id=?;");
             $stmt->bind_param("sss", $emailID, $mobileNumber,$this->emailID);
@@ -236,6 +236,74 @@
                     }
                 }
             }   
+        }
+
+        public function getApplicationFormStatus() {
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("SELECT status FROM application WHERE email=?;");
+            $stmt->bind_param("s", $this->emailID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $firstName = "";
+            $middleName = "";
+            $lastName = "";
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $status = $row['status'];
+                    return $status;
+                }
+            } else {
+                return false;
+            }
+        }
+
+        public function getApplicationFormDetails() {
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("SELECT * FROM application WHERE email=?;");
+            $stmt->bind_param("s", $this->emailID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $firstName = "";
+            $middleName = "";
+            $lastName = "";
+
+            $resultRow = array();
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $resultRow[] = $row;
+                }
+
+                return $resultRow;
+            } else {
+                return false;
+            }
+        }
+
+        public function getUserProfileDetails() {
+            $connection = $this->dbController->getConnection();
+            $stmt = $connection->prepare("SELECT email_id, first_name, middle_name, last_name, mobile_number FROM user WHERE email_id=?;");
+            $stmt->bind_param("s", $this->emailID);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $firstName = "";
+            $middleName = "";
+            $lastName = "";
+
+            $resultRow = array();
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $resultRow[] = $row;
+                }
+                $resultRow = $resultRow[0];
+
+                return $resultRow;
+            } else {
+                return false;
+            }
         }
     }
 ?>
