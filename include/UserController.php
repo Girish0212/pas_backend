@@ -4,13 +4,15 @@
     class UserController {
 
         private $emailID = "";
+        private $role = "";
         private $dbController = null;
         private $userValidity = false;
         private $passwordResetCode = "";
 
         /* Constructor */
-        public function __construct($emailID) {
+        public function __construct($emailID, $role) {
             $this->emailID = $emailID;
+            $this->role = $role;
             $this->dbController = new DatabaseController();
 
             /* Check connection validity */
@@ -25,8 +27,8 @@
         /* Checks if the user with provided e-mail ID exists, and return true or false depending upon the result */
         private function isUserValid() {
             $connection = $this->dbController->getConnection();
-            $stmt = $connection->prepare("SELECT email_id FROM user WHERE email_id=?;");
-            $stmt->bind_param("s", $this->emailID);
+            $stmt = $connection->prepare("SELECT email_id FROM user WHERE email_id=? AND role=?;");
+            $stmt->bind_param("ss", $this->emailID, $this->role);
             $stmt->execute();
             $result = $stmt->get_result();
             
@@ -45,8 +47,8 @@
             $pass_hash = hash('sha256', $password);
 
             $connection = $this->dbController->getConnection();
-            $stmt = $connection->prepare("SELECT pass_hash FROM user WHERE email_id=?;");
-            $stmt->bind_param("s", $this->emailID);
+            $stmt = $connection->prepare("SELECT pass_hash FROM user WHERE email_id=? AND role=?;");
+            $stmt->bind_param("ss", $this->emailID, $this->role);
             $stmt->execute();
             $result = $stmt->get_result();
 

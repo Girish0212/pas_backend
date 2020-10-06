@@ -5,7 +5,7 @@
     /* Response Array */
     $responseArray = array();
 
-    if (isset($_POST['password']) && !empty($_POST['password'])) {
+    if (isset($_POST['password']) && !empty($_POST['password']) && isset($_POST['role']) && !empty($_POST['role'])) {
         try {
             $password = $_POST['password'];
             $passHash = hash('sha256', $password);
@@ -17,8 +17,8 @@
 
             $dbController = new DatabaseController();
             $connection = $dbController->getConnection();
-            $stmt = $connection->prepare("UPDATE user SET pass_hash=? WHERE email_id=?;");
-            $stmt->bind_param("ss", $passHash, $emailID);
+            $stmt = $connection->prepare("UPDATE user SET pass_hash=? WHERE email_id=? AND role=?;");
+            $stmt->bind_param("sss", $passHash, $emailID, $_POST['role']);
             $stmt->execute();
             $responseArray['emailID'] = $emailID;
             $responseArray['passHash'] = $passHash;
