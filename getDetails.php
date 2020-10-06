@@ -52,7 +52,7 @@
             break;
             case 'specificApplicationDetails':
                 $cookieArray = getCookieArray();
-                $status = getAllApplicationDetails($_POST['application_number'], $_POST['role']);
+                $status = getSpecificApplicationDetails($_POST['application_number'], $_POST['role']);
                 $responseArray['requestType'] = 'getSpecificApplicationDetails';
                 $responseArray['emailID'] = $cookieArray['emailID'];
                 $responseArray['result'] = $status;

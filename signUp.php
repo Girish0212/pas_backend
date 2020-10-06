@@ -48,7 +48,7 @@
             if ($result->num_rows > 0) {
                 $responseArray['result'] = "alreadyExists";
             } else {
-                $stmt = $conn->prepare("INSERT INTO user (email_id, pass_hash, active, first_name, middle_name, last_name, mobile_number) VALUES (?, ?, ?, ?, ?, ?, ?);");
+                $stmt = $conn->prepare("INSERT INTO user (email_id, pass_hash, role, active, first_name, middle_name, last_name, mobile_number) VALUES (?, ?, 'applicant', ?, ?, ?, ?, ?);");
                 $stmt->bind_param("sssssss", $emailID, $passHash, $active, $firstName, $middleName, $lastName, $mobileNumber);
                 $stmt->execute();
                 
@@ -124,7 +124,7 @@
                         rollbackRegistration();
                     }
                 } else {
-                    $responseArray['result'] = "failure";
+                    $responseArray['result'] = "insert_failure";
                 }
             }
         } catch (Exception $e) {
