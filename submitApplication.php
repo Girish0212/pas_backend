@@ -43,6 +43,11 @@
                 $appliedOn = date("Y-m-d");
                 $dbController = new DatabaseController();
                 $connection = $dbController->getConnection();
+                // delete previous application, if existing (don't allow duplicate applications as of now)
+                $stmt = $connection->prepare("DELETE FROM application WHERE email=?");
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                // proceed to insert application row
                 $stmt = $connection->prepare("INSERT INTO application (applied_on, full_name, surname, gender, date_of_birth, mobile_number, phone_number, email, address, state, citizenship, id_proof_number, voter_id, rpo_state, rpo_district, rpo_centre, passport_type, passport_booklet_pages, passport_photo, id_proof, address_proof, passport_number, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?);");
                 $stmt->bind_param("ssssssssssssssssssssss", $appliedOn, $fullName, $surname, $gender, $dateOfBirth, $mobileNumber, $phoneNumber, $email, $address, $state, $citizenship, $idProofNumber, $voterID, $rpoState, $rpoDistrict, $rpoCentre, $passportType, $passportBookletPages, $passportPhoto, $idProof, $addressProof, $status);
                 $stmt->execute();
