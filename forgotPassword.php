@@ -13,15 +13,16 @@
     /* Response Array */
     $responseArray = array();
 
-    if (isset($_POST['emailID']) && !empty($_POST['emailID'])) {
+    if (isset($_POST['emailID']) && !empty($_POST['emailID']) && isset($_POST['role']) && !empty($_POST['role'])) {
         $emailID = $_POST['emailID'];
+        $role = $_POST['role'];
 
         $responseArray['requestType'] = 'resetPassword';
         $responseArray['emailID'] = $emailID;
 
         try {
             // check user validity
-            $userController = new UserController($emailID);
+            $userController = new UserController($emailID, $role);
             $isValid = $userController->getUserValidity();
 
             if (!$isValid) {
@@ -47,8 +48,8 @@
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port = 587;
 
-                    $mail->Username = 'saaivignesh20@gmail.com'; // YOUR gmail email
-                    $mail->Password = 'saaivignesh@12345'; // YOUR gmail password
+                    $mail->Username = 'pingteambacktrack@gmail.com'; // YOUR gmail email
+                    $mail->Password = '54575457'; // YOUR gmail password
 
                     // Sender and recipient settings
                     $mail->setFrom('noreply_pas@gmail.com', 'PAS Backend');
