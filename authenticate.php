@@ -115,7 +115,7 @@
         return $userController->getUserValidity();
     }
 
-    function checkAccountActivation($emailID) {
+    function checkAccountActivation($emailID, $role) {
         $userController = new UserController($emailID, $role);
         return $userController->getAccountActivation();
     }
